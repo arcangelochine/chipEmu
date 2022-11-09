@@ -121,6 +121,9 @@ int main()
                 util_chip_execute(op_code);
             }
 
+            for (uint8 i = 0; i < 0x10; i++)
+                key_prev[i] = key_state[i];
+
             // render chip display
             util_render();
 

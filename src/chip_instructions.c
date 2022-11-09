@@ -398,7 +398,7 @@ void LD5(uint8 reg)
 {
     V[reg] = 0;
     for (int i = 0; i < 16; i++)
-        if (key_state[i])
+        if (key_state[i] && !key_prev[i])
         {
             V[reg] = i;
             return;

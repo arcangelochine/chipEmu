@@ -33,6 +33,9 @@ uint8 display[0x20][0x40];
 // chip emulated keyboard: 1 for down, 0 for up
 uint8 key_state[0x10];
 
+// chip keyobard previous state: 1 for down, 0 for up
+uint8 key_prev[0x10];
+
 // chip random value
 uint8 next;
 
