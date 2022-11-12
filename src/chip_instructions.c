@@ -343,12 +343,16 @@ void RND(uint8 reg, uint8 val)
  */
 void DRW(uint8 regX, uint8 regY, uint8 n)
 {
-    if (V[regX] > 63 || V[regY] > 32)
-        return;
+    uint8 vx = V[regX];
+    uint8 vy = V[regY];
 
-    uint8 vx = V[regX] % 64;
-    uint8 vy = V[regY] % 32;
-    V[0xF] = 0;
+    if (vx > 63 || vy > 31)
+    {
+        vx %= 64;
+        vy %= 32;
+    }
+    
+    uint8 collision = 0;
 
     for (uint8 y = 0; y < n; y++)
     {
@@ -359,10 +363,12 @@ void DRW(uint8 regX, uint8 regY, uint8 n)
                 break;
             uint8 pixel = (row & (1 << (7 - x))) >> (7 - x);
             if (display[vy + y][vx + x] && pixel)
-                V[0xF] = 1;
+                collision = 1;
             display[vy + y][vx + x] ^= pixel;
         }
     }
+
+    V[0xF] = collision;
 }
 
 /**
