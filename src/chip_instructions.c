@@ -191,10 +191,13 @@ void XOR(uint8 regX, uint8 regY)
  */
 void ADD2(uint8 regX, uint8 regY)
 {
-    V[0xF] = 0;
-    if (V[regX] + V[regY] > 255)
-        V[0xF] = 1;
+    uint8 overflow = 0;
+    if ((uint16)V[regX] + (uint16)V[regY] > 255)
+        overflow = 1;
+
     V[regX] += V[regY];
+
+    V[0xF] = overflow;
 }
 
 /**
@@ -207,10 +210,13 @@ void ADD2(uint8 regX, uint8 regY)
  */
 void SUB(uint8 regX, uint8 regY)
 {
-    V[0xF] = 0;
+    uint8 underflow = 0;
     if (V[regX] > V[regY])
-        V[0xF] = 1;
+        underflow = 1;
+
     V[regX] -= V[regY];
+
+    V[0xF] = underflow;
 }
 
 /**
@@ -223,10 +229,13 @@ void SUB(uint8 regX, uint8 regY)
  */
 void SHR(uint8 regX, uint8 regY)
 {
-    V[0xF] = 0;
+    uint8 lsb = 0;
     if (V[regY] & 0x01)
-        V[0xF] = 1;
+        lsb = 1;
+
     V[regX] = V[regY] >> 1;
+
+    V[0xF] = lsb;
 }
 
 /**
@@ -239,10 +248,13 @@ void SHR(uint8 regX, uint8 regY)
  */
 void SUBN(uint8 regX, uint8 regY)
 {
-    V[0xF] = 0;
+    uint8 not_borrow = 0;
     if (V[regY] > V[regX])
-        V[0xF] = 1;
+        not_borrow = 1;
+
     V[regX] = V[regY] - V[regX];
+
+    V[0xF] = not_borrow;
 }
 
 /**
@@ -255,10 +267,13 @@ void SUBN(uint8 regX, uint8 regY)
  */
 void SHL(uint8 regX, uint8 regY)
 {
-    V[0xF] = 0;
+    uint8 msb = 0;
     if (V[regY] & 0x80)
-        V[0xF] = 1;
+        msb = 1;
+
     V[regX] = V[regY] << 1;
+
+    V[0xF] = msb;
 }
 
 /**
@@ -296,7 +311,8 @@ void LD3(uint16 addr)
  */
 void JP2(uint16 addr)
 {
-    PC = addr + V[(addr & 0xF0) >> 4];
+    // PC = addr + V[(addr & 0xF0) >> 4];
+    PC = addr + V[0x0];
 }
 
 /**
@@ -327,9 +343,9 @@ void RND(uint8 reg, uint8 val)
  */
 void DRW(uint8 regX, uint8 regY, uint8 n)
 {
-    if (V[regX] > 63 || V[regY] > 32) 
+    if (V[regX] > 63 || V[regY] > 32)
         return;
-    
+
     uint8 vx = V[regX] % 64;
     uint8 vy = V[regY] % 32;
     V[0xF] = 0;
